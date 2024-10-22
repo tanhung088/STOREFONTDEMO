@@ -139,6 +139,7 @@ export default {
       await search();
     });
     const headerNavigation = computed(() => categoryGetters.getNavigation(categories.value));
+    console.log("headerNavigateion", headerNavigation);
     const closeSearch = () => {
       if (!isSearchOpen.value) return;
       term.value = '';
