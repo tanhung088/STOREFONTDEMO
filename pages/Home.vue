@@ -1,0 +1,372 @@
+<template>
+  <div id="home">
+    <div class="trending-game">
+      <TrendingGameTopUp />
+    </div>
+
+    <!-- <LazyHydrate when-idle>
+      <SfHero class="hero">
+        <SfHeroItem v-for="(hero, i) in heroes" :key="i" :title="hero.title" :subtitle="hero.subtitle"
+          :background="hero.background" :image="hero.image" :class="hero.className" />
+      </SfHero>
+    </LazyHydrate> -->
+
+    <!-- <LazyHydrate when-visible>
+      <SfBannerGrid :banner-grid="1" class="banner-grid">
+        <template v-for="item in banners" v-slot:[item.slot]>
+          <SfBanner :key="item.slot" :title="item.title" :subtitle="item.subtitle" :description="item.description"
+            :button-text="item.buttonText" :link="localePath(item.link)" :image="item.image" :class="item.class" />
+        </template>
+</SfBannerGrid>
+</LazyHydrate> -->
+
+    <!-- Trending Gift Card-->
+    <LazyHydrate when-visible>
+      <div class="similar-products">
+        <SfHeading title="Trending Gift Cards" :level="2" />
+        <nuxt-link :to="localePath('/c/women')" class="smartphone-only">See all</nuxt-link>
+      </div>
+    </LazyHydrate>
+
+    <LazyHydrate when-visible>
+      <SfCarousel class="carousel" :settings="{ peek: 16, breakpoints: { 1023: { peek: 0, perView: 2 } } }">
+        <template #prev="{ go }">
+          <SfArrow aria-label="prev" class="sf-arrow--left sf-arrow--long" @click="go('prev')" />
+        </template>
+        <template #next="{ go }">
+          <SfArrow aria-label="next" class="sf-arrow--right sf-arrow--long" @click="go('next')" />
+        </template>
+        <SfCarouselItem class="carousel__item" v-for="(product, i) in products" :key="i">
+          <SfProductCard :title="product.productName" :image="product.productAsset.preview"
+            :regular-price="$n(getCalculatedPrice(product.price.value), 'currency')"
+            :link="localePath(`/p/${product.productId}/${product.slug}`)" class="carousel__item__product" />
+        </SfCarouselItem>
+      </SfCarousel>
+    </LazyHydrate>
+
+    <!-- Trending Gift Games-->
+    <LazyHydrate when-visible>
+      <div class="similar-products">
+        <SfHeading title="Trending Games" :level="2" />
+        <nuxt-link :to="localePath('/c/women')" class="smartphone-only">See all</nuxt-link>
+      </div>
+    </LazyHydrate>
+
+    <LazyHydrate when-visible>
+      <SfCarousel class="carousel" :settings="{ peek: 16, breakpoints: { 1023: { peek: 0, perView: 2 } } }">
+        <template #prev="{ go }">
+          <SfArrow aria-label="prev" class="sf-arrow--left sf-arrow--long" @click="go('prev')" />
+        </template>
+        <template #next="{ go }">
+          <SfArrow aria-label="next" class="sf-arrow--right sf-arrow--long" @click="go('next')" />
+        </template>
+        <SfCarouselItem class="carousel__item" v-for="(product, i) in products" :key="i">
+          <SfProductCard :title="product.productName" :image="product.productAsset.preview"
+            :regular-price="$n(getCalculatedPrice(product.price.value), 'currency')"
+            :link="localePath(`/p/${product.productId}/${product.slug}`)" class="carousel__item__product" />
+        </SfCarouselItem>
+      </SfCarousel>
+    </LazyHydrate>
+
+    <!-- Trending-->
+    <div class="trending">
+      <Trending />
+    </div>
+
+  </div>
+</template>
+<script>
+import {
+  SfHero,
+  SfBanner,
+  SfCallToAction,
+  SfSection,
+  SfCarousel,
+  SfProductCard,
+  SfImage,
+  SfBannerGrid,
+  SfHeading,
+  SfArrow,
+  SfButton
+} from '@storefront-ui/vue';
+import InstagramFeed from '~/components/InstagramFeed.vue';
+import LazyHydrate from 'vue-lazy-hydration';
+import { useContext, computed } from '@nuxtjs/composition-api';
+import { useFacet } from '@vue-storefront/vendure';
+import { onSSR } from '@vue-storefront/core';
+import { getCalculatedPrice } from '~/helpers';
+import TrendingGameTopUp from '~/components/HomeComponents/TrendingGameTopUp.vue';
+import TrendingGifCard from '~/components/HomeComponents/TrendingGifCard.vue';
+import Trending from '~/components/HomeComponents/Trending.vue';
+
+export default {
+  name: 'Home',
+  components: {
+    InstagramFeed,
+    SfHero,
+    SfBanner,
+    SfCallToAction,
+    SfSection,
+    SfCarousel,
+    SfProductCard,
+    SfImage,
+    SfBannerGrid,
+    SfHeading,
+    SfArrow,
+    SfButton,
+    LazyHydrate,
+    TrendingGameTopUp,
+    TrendingGifCard,
+    Trending
+  },
+  setup() {
+    console.log("HOME START");
+    const { $config } = useContext();
+    const heroes = [
+      {
+        title: 'Colorful summer dresses are already in store',
+        subtitle: 'SUMMER COLLECTION 2019',
+        background: '#eceff1',
+        image: '/homepage/bannerH.webp'
+      },
+      {
+        title: 'Colorful summer dresses are already in store',
+        subtitle: 'SUMMER COLLECTION 2019',
+        background: '#efebe9',
+        image: '/homepage/bannerA.webp',
+        className:
+          'sf-hero-item--position-bg-top-left sf-hero-item--align-right'
+      },
+      {
+        title: 'Colorful summer dresses are already in store',
+        subtitle: 'SUMMER COLLECTION 2019',
+        background: '#fce4ec',
+        image: '/homepage/bannerB.webp'
+      }
+    ];
+    const banners = [
+      {
+        slot: 'banner-A',
+        subtitle: 'Dresses',
+        title: 'Cocktail & Party',
+        description:
+          'Find stunning women\'s cocktail dresses and party dresses. Stand out in lace and metallic cocktail dresses from all your favorite brands.',
+        buttonText: 'Shop now',
+        image: {
+          mobile: $config.theme.home.bannerA.image.mobile,
+          desktop: $config.theme.home.bannerA.image.desktop
+        },
+        class: 'sf-banner--slim desktop-only',
+        link: $config.theme.home.bannerA.link
+      },
+      {
+        slot: 'banner-B',
+        subtitle: 'Dresses',
+        title: 'Linen Dresses',
+        description:
+          'Find stunning women\'s cocktail dresses and party dresses. Stand out in lace and metallic cocktail dresses from all your favorite brands.',
+        buttonText: 'Shop now',
+        image: $config.theme.home.bannerB.image,
+        class: 'sf-banner--slim banner-central desktop-only',
+        link: $config.theme.home.bannerB.link
+      },
+      {
+        slot: 'banner-C',
+        subtitle: 'T-Shirts',
+        title: 'The Office Life',
+        image: $config.theme.home.bannerC.image,
+        class: 'sf-banner--slim banner__tshirt',
+        link: $config.theme.home.bannerC.link
+      },
+      {
+        slot: 'banner-D',
+        subtitle: 'Summer Sandals',
+        title: 'Eco Sandals',
+        image: $config.theme.home.bannerD.image,
+        class: 'sf-banner--slim',
+        link: $config.theme.home.bannerD.link
+      }
+    ];
+    const { search, result } = useFacet();
+
+    onSSR(async () => {
+      await search({ sort: { name: 'DESC' }, take: 8 });
+    });
+
+    const products = computed(() => result.value.data.items);
+
+    return {
+      heroes,
+      banners,
+      products,
+      getCalculatedPrice,
+      trendingCards: [
+        {
+          id: 1,
+          title: 'Amazon Gift Card',
+          image: '/images/gift-cards/amazon.jpg',
+          price: 25,
+          slug: 'amazon-gift-card',
+        },
+        {
+          id: 2,
+          title: 'iTunes Gift Card',
+          image: '/images/gift-cards/itunes.jpg',
+          price: 30,
+          slug: 'itunes-gift-card',
+        },
+        // Thêm các thẻ quà tặng khác ở đây...
+      ],
+    };
+
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+#home {
+  box-sizing: border-box;
+  padding: 0 var(--spacer-sm);
+
+  @include for-desktop {
+    max-width: 1240px;
+    padding: 0;
+    margin: 0 auto;
+  }
+}
+
+.hero {
+  margin: var(--spacer-xl) auto var(--spacer-lg);
+  --hero-item-background-position: center;
+
+  @include for-desktop {
+    margin: var(--spacer-xl) auto var(--spacer-2xl);
+  }
+
+  .sf-hero-item {
+    &:nth-child(even) {
+      --hero-item-background-position: left;
+
+      @include for-mobile {
+        --hero-item-background-position: 30%;
+
+        ::v-deep .sf-hero-item__subtitle,
+        ::v-deep .sf-hero-item__title {
+          text-align: right;
+          width: 100%;
+          padding-left: var(--spacer-sm);
+        }
+      }
+    }
+  }
+
+  ::v-deep .sf-hero__control {
+
+    &--right,
+    &--left {
+      display: none;
+    }
+  }
+}
+
+.banner-grid {
+  --banner-container-width: 50%;
+  margin: var(--spacer-xl) 0;
+
+  ::v-deep .sf-link:hover {
+    color: var(--c-white);
+  }
+
+  @include for-desktop {
+    margin: var(--spacer-2xl) 0;
+
+    ::v-deep .sf-link {
+      --button-width: auto;
+      text-decoration: none;
+    }
+  }
+}
+
+.banner {
+  &__tshirt {
+    background-position: left;
+  }
+
+  &-central {
+    @include for-desktop {
+      --banner-container-flex: 0 0 70%;
+    }
+  }
+}
+
+.similar-products {
+  margin-top: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: var(--spacer-2xs);
+  --heading-padding: 0;
+  border-bottom: 1px var(--c-light) solid;
+
+  @include for-desktop {
+    border-bottom: 0;
+    justify-content: center;
+    padding-bottom: 0;
+  }
+}
+
+// .sf-product-card {
+//   background-color: #333; /* Màu tối, ví dụ là màu xám đen */
+//   color: #fff; /* Thêm màu chữ sáng để dễ nhìn trên nền tối */
+//   margin: 30px;
+//   height: 200px;
+//   width: 250px;
+// }
+
+::v-deep .sf-product-card__image .sf-image {
+  --image-height: 14.375rem;
+  --image-width: 9.375rem;
+  object-fit: cover;
+
+  @include for-desktop {
+    --image-width: 12.125rem;
+    --image-height: 10.75rem;
+    border-radius: 20px;
+  }
+}
+
+.call-to-action {
+  background-position: right;
+  margin: var(--spacer-xs) 0;
+
+  @include for-desktop {
+    margin: var(--spacer-xl) 0 var(--spacer-2xl) 0;
+  }
+}
+
+.carousel {
+  margin: 0 calc(-1 * var(--spacer-sm)) 0 0;
+
+  @include for-desktop {
+    margin: 0;
+  }
+
+  &__item {
+    margin: 1.375rem 0 2.5rem 0;
+
+    @include for-desktop {
+      margin: var(--spacer-xl) 0 var(--spacer-xl) 0;
+    }
+
+    &__product {
+      --product-card-add-button-transform: translate3d(0, 30%, 0);
+    }
+  }
+
+  ::v-deep .sf-arrow--long .sf-arrow--right {
+    --arrow-icon-transform: rotate(180deg);
+    -webkit-transform-origin: center;
+    transform-origin: center;
+  }
+}
+</style>
