@@ -1,32 +1,53 @@
-import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
+import { ApolloClient, InMemoryCache, gql } from "@apollo/client/core";
+import { provideApolloClient } from "@vue/apollo-composable";
+import { GET_ALL_COLLECTIONS, GET_SUBCATEGORIES_BY_PARENT, GET_TOP_LEVEL_COLLECTIONS } from "~/GraphQL/collection_queries";
 
-export const 
 const client = new ApolloClient({
-  uri: "http://your-vendure-server.com/graphql",
+  uri: "http://localhost:3000/shop-api",
   cache: new InMemoryCache(),
-  headers: {
-    Authorization: `Bearer YOUR_API_TOKEN`, // Include this if authentication is needed
-  },
+  // Uncomment and set this if you need authentication
+  // headers: {
+  //   Authorization: `Bearer YOUR_API_TOKEN`,
+  // },
 });
 
-const GET_PRODUCTS = gql`
-  query {
-    products {
-      items {
-        id
-        name
-        price {
-          currencyCode
-          value
-        }
-      }
-    }
-  }
-`;
+provideApolloClient(client);
 
-client
-  .query({
-    query: GET_PRODUCTS,
-  })
-  .then((response) => console.log(response.data))
-  .catch((error) => console.error("Error:", error));
+export const getAllCollectionsWithAssets = async () => {
+  try {
+    const { data } = await client.query({
+      query: GET_ALL_COLLECTIONS,
+    });
+    const collections = data.collections.items;
+    return collections;
+  } catch (error) {
+    console.error("Error fetching collections with assets:", error);
+  }
+};
+
+export const getTopLevelCollection = async () => {
+  try {
+    const { data } = await client.query({
+      query: GET_TOP_LEVEL_COLLECTIONS,
+    });
+    const collections = data.collections.items;
+    return collections;
+  } catch (error) {
+    console.error("Error fetching collections with assets:", error);
+  }
+};
+
+export const getSubcategoriesByParent = async (parentId) => {
+  try {
+    const { data } = await client.query({
+      query: GET_SUBCATEGORIES_BY_PARENT,
+      variables: { parentId },
+    });
+    const subcategories = data.collections.items;
+    return subcategories;
+  } catch (error) {
+    console.error("Error fetching subcategories:", error);
+    return [];
+  }
+};
+

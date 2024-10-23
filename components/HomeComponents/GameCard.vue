@@ -1,6 +1,6 @@
 <template>
   <nuxt-link :to="`/c/${cate.slug}`" class="game-card">
-    <img :src="cate.featuredAsset"
+    <img :src="cate.featuredAsset.preview"
     :alt="cate.name" class="game-card__image" />
     <div class="game-card__content">
       <h3 class="game-card__name">{{ cate.name }}</h3>

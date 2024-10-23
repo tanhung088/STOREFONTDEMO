@@ -2,10 +2,6 @@
   <div class="trending-game-topup">
     <div class="trending-game-topup__header">
       <h2>Trending Game Top Up</h2>
-      <!-- <a href="#" class="discover-all">
-                Discover all
-                <SfIcon icon="arrow-right" class="discover-all__icon" />
-            </a> -->
     </div>
     <div class="trending-game-topup__grid">
       <GameCard
@@ -14,7 +10,6 @@
         :cate="cate"
       />
       <p v-if="loading">Loading games...</p>
-      <!-- Loading state -->
     </div>
   </div>
 </template>
@@ -22,7 +17,7 @@
 <script>
 import GameCard from "./GameCard.vue";
 import { onMounted, ref } from "@nuxtjs/composition-api";
-import { useCollections } from "~/API/apiCollection";
+import { getAllCollectionsWithAssets } from "~/API/apiCollection"; // Import the function
 
 export default {
   name: "TrendingGameTopUp",
@@ -30,7 +25,21 @@ export default {
     GameCard,
   },
   setup() {
-    const { collections, loading, error } = useCollections();
+    const collections = ref([]);
+    const loading = ref(true);
+    const error = ref(null);
+
+    onMounted(async () => {
+      try {
+        const response = await getAllCollectionsWithAssets();
+        collections.value = response;
+      } catch (err) {
+        error.value = err;
+      } finally {
+        loading.value = false;
+      }
+    });
+
     return { collections, loading, error };
   },
 };
@@ -46,8 +55,8 @@ export default {
 }
 
 .trending-game-topup__header {
-  display: flex; /* Keep flex for icon alignment */
-  justify-content: center; /* Center the content */
+  display: flex;
+  justify-content: center;
   align-items: center;
   margin-bottom: 1rem;
 }
@@ -56,15 +65,5 @@ export default {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
-}
-
-.discover-all {
-  display: flex;
-  align-items: center;
-  color: white;
-}
-
-.discover-all__icon {
-  margin-left: 0.5rem;
 }
 </style>

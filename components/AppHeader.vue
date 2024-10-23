@@ -139,7 +139,6 @@ export default {
       await search();
     });
     const headerNavigation = computed(() => categoryGetters.getNavigation(categories.value));
-    console.log("headerNavigateion", headerNavigation);
     const closeSearch = () => {
       if (!isSearchOpen.value) return;
       term.value = '';
@@ -226,11 +225,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
 .sf-header {
   --header-padding: var(--spacer-sm);
 
   @include for-desktop {
     --header-padding: 0;
+  }
+
+  ::v-deep .sf-header__wrapper {
+    position: fixed;
+    z-index: 999;
+    // Add other styles as needed
   }
 
   &__navigation.is-visible {
